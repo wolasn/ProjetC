@@ -5,5 +5,5 @@ int main()
 {
   initGrille(7);
   affichage();
-  terminateGrille();
+  terminate();
 }

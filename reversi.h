@@ -2,13 +2,19 @@
 #define __REVERSI__
 
   typedef enum{vide=0,bombe,vert,rouge}cellule;
+  typedef struct{
+    int dirhori;
+    int dirverti;
+  }direction;
 
   cellule **initGrille(int M);
-  int terminateGrille();
+  int terminate();
   char getSymbole(cellule c);
-  int affichage();
-  int checkbords(int i, int j, int dirhori, int dirverti);
-  int checkligne(int x, int y, int dirhori, int dirverti, cellule c);
-  int pose(cellule c);
+  void affichage();
+  int checkbords(int i, int j, direction dir);
+  int checkligne(int x, int y, direction dir, cellule c);
+  void explosion(int x, int y);
+  void capture(int *tab, int x, int y, cellule c);
+  void pose(cellule c);
 
 #endif
