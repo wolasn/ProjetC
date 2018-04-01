@@ -93,4 +93,73 @@ int affichage()
   return(0);
 }
 
+int checkbords(int i, int j, int dirhori, int dirverti)
+{
+  if
+  (((dirhori==1 && dirverti==1) && (i==N-1 || j==N-1))    //sudest
+  ||((dirhori==1 && dirverti==-1) && (i==N-1 || j==0))    //nordest
+  ||((dirhori==-1 && dirverti==1) && (i==0 || j==N-1))    //sudouest
+  ||((dirhori==-1 && dirverti==-1) && (i==0 || j==0))     //nordouest
+  ||((dirhori==1 && dirverti==0) && (i==N-1))             //est
+  ||((dirhori==-1 && dirverti==0) && (i==0))              //ouest
+  ||((dirhori==0 && dirverti==1) && (j==N-1))             //sud
+  ||((dirhori==0 && dirverti==-1) && (j==0))){            //nord
+    return(0);
+  }else{
+  return(1);
+  }
+}
 
+int checkligne(int x, int y, int dirhori, int dirverti, cellule c)
+{
+  int i=x,j=y;
+  cellule suivante;
+
+  if(!checkbords(i,j,dirhori,dirverti))
+  {
+    return(0);
+  }else{
+    suivante=(grille[i+dirhori][y+dirverti]);
+    if(suivante==vide || suivante==bombe || suivante==c){
+      return(0);
+    }
+  }
+
+  while(suivante!=c){
+    i+=dirhori;j+=dirverti;
+    if(!checkbords(i,j,dirhori,dirverti))
+    {
+      return(0);
+    }else{
+      suivante=(grille[i+dirhori][y+dirverti]);
+      if(suivante==vide || suivante==bombe){
+        return(0);
+      }
+    }
+  }
+
+  if(i!=0){
+    return(abs(x-i));
+  }else{
+    return(abs(y-j));
+  }
+}
+
+//pose d'un pion
+int pose(cellule c)
+{
+  int x,y,nord,sud,ouest,est,nordouest,nordest,sudouest,sudest;
+  do{
+    printf("Entrez la case où vous souhaitez jouer au format x,y\n");
+    scanf("%d,%d",&x,&y);
+  }while
+  (nord=checkligne(x,y,0,-1,c)
+  || sud=checkligne(x,y,0,1,c)
+  || ouest=checkligne(x,y,-1,0,c)
+  || est=checkligne(x,y,1,0,c)
+  || nordouest=checkligne(x,y,-1,-1,c)
+  || nordest=checkligne(x,y,1,-1,c)
+  || sudouest=checkligne(x,y,-1,1,c)
+  || sudest=checkligne(x,y,1,1,c));
+
+}
