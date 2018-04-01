@@ -161,5 +161,4 @@ int pose(cellule c)
   || nordest=checkligne(x,y,1,-1,c)
   || sudouest=checkligne(x,y,-1,1,c)
   || sudest=checkligne(x,y,1,1,c));
-
 }
