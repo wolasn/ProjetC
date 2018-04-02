@@ -8,19 +8,28 @@
 #define ERREUR_getSymbole 2
 #define mode 'D'
 //note : N pair et >= 6
-#define N 14
+#define N 10
 
 //notre plateau
 static cellule **grille;
 
 //tableau de directions prédéfinies
-const direction nord={0,-1},sud={0,1},est={1,0},ouest={-1,0},nordest={1,-1},nordouest={-1,-1},sudest={1,1},sudouest={-1,1};
+const direction
+nord={0,-1},
+sud={0,1},est={1,0},
+ouest={-1,0},
+nordest={1,-1},
+nordouest={-1,-1},
+sudest={1,1},
+sudouest={-1,1};
+
 //à mettre en constante
 fleche *rose;
 
 //initialisation du tableau de directions
 void initrose()
 {
+  printf("Entrée initrose()\n");
   rose=malloc(sizeof(fleche)*8);
   rose[0].dir=nord;
   rose[1].dir=sud;
@@ -30,12 +39,13 @@ void initrose()
   rose[5].dir=nordouest;
   rose[6].dir=sudest;
   rose[7].dir=sudouest;
+  printf("Sortie initrose()\n");
 }
 
 //initialisation de la grille de jeu
-cellule **initGrille(int M)
+void initGrille(int M)
 {
-  cellule **grille;
+  printf("Entrée initGrille()\n");
   int randomX,randomY,milieu=(N/2)-1;
   srand(time(NULL));
 
@@ -73,7 +83,7 @@ cellule **initGrille(int M)
     }while((((randomX >= milieu-1) && (randomX <= milieu+2)) && ((randomY >= milieu-1) && (randomY <= milieu+2))) || (grille[randomX][randomY]==bombe));
     grille[randomX][randomY]=bombe;
   }
-  return(grille);
+  printf("Sortie initGrille()\n");
 }
 
 //désallouages
@@ -107,6 +117,7 @@ char getSymbole(cellule c)
 //affichage d'une grille sur la sortie standard
 void affichage()
 {
+  system("clear");
   for(int i=0;i<N;i++){
     for(int j=0;j<N;j++){
       printf("[%c]",getSymbole(grille[i][j]));
@@ -115,6 +126,8 @@ void affichage()
   }
 }
 
+//pour vérifier si l'on va sur un bord
+//renvoie 0 si c'est le cas
 int checkbords(int i, int j, direction dir)
 {
   if
@@ -131,7 +144,8 @@ int checkbords(int i, int j, direction dir)
   return(1);
 }
 
-int checkligne(int x, int y, direction dir, cellule c)
+//renvoie le nombre de pion capturés avec une pose dans une direction donnée
+int checkcapture(int x, int y, direction dir, cellule c)
 {
   int i=x,j=y;
   cellule suivante;
@@ -157,14 +171,14 @@ int checkligne(int x, int y, direction dir, cellule c)
       }
     }
   }
-  if(i!=0){
+  if((i-x)!=0){
     return(abs(x-i));
   }else{
     return(abs(y-j));
   }
 }
 
-//explosion d'une bombe, met la case ainsi que celles autour à vide
+//explosion d'une bombe, affecte vide à la case ainsi qu'à celles autour d'elle
 void explosion(int x, int y)
 {
   direction dir;
@@ -177,6 +191,7 @@ void explosion(int x, int y)
   grille[x][y]=vide;
 }
 
+//capture de pions enemies
 void capture(int x, int y, cellule c)
 {int dir1,dir2;
   for(int i=0;i<8;i++){
@@ -191,28 +206,14 @@ void capture(int x, int y, cellule c)
 //pose d'un pion
 void pose(cellule c)
 {
-  int x,y;
-
+  int x,y,s;
   do{
     printf("Entrez la case où vous souhaitez jouer au format x,y\n");
     scanf("%d,%d",&x,&y);
-    rose[0].nbcases=checkligne(x,y,nord,c);
-    rose[1].nbcases=checkligne(x,y,sud,c);
-    rose[2].nbcases=checkligne(x,y,est,c);
-    rose[3].nbcases=checkligne(x,y,ouest,c);
-    rose[4].nbcases=checkligne(x,y,nordest,c);
-    rose[5].nbcases=checkligne(x,y,nordouest,c);
-    rose[6].nbcases=checkligne(x,y,sudest,c);
-    rose[7].nbcases=checkligne(x,y,sudouest,c);
-  }while
-  (!(rose[0].nbcases
-    || rose[1].nbcases
-    || rose[2].nbcases
-    || rose[3].nbcases
-    || rose[4].nbcases
-    || rose[5].nbcases
-    || rose[6].nbcases
-    || rose[7].nbcases));
+    for(int i=0;i<8;i++){
+      s+=rose[i].nbcases=checkcapture(x,y,rose[i].dir,c);
+    }
+  }while(!s);
 
   if(grille[x][y]==bombe){
     explosion(x,y);

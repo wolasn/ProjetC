@@ -3,7 +3,7 @@
 
 int main()
 {
-  initGrille(7);
+  initGrille(17);
   affichage();
   terminate();
 }

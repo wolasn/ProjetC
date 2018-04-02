@@ -11,12 +11,12 @@
     int nbcases;
   }fleche;
 
-  cellule **initGrille(int M);
+  void initGrille(int M);
   int terminate();
   char getSymbole(cellule c);
   void affichage();
   int checkbords(int i, int j, direction dir);
-  int checkligne(int x, int y, direction dir, cellule c);
+  int checkcapture(int x, int y, direction dir, cellule c);
   void explosion(int x, int y);
   void capture(int x, int y, cellule c);
   void pose(cellule c);
