@@ -6,6 +6,10 @@
     int dirhori;
     int dirverti;
   }direction;
+  typedef struct{
+    direction dir;
+    int nbcases;
+  }fleche;
 
   cellule **initGrille(int M);
   int terminate();
@@ -14,7 +18,7 @@
   int checkbords(int i, int j, direction dir);
   int checkligne(int x, int y, direction dir, cellule c);
   void explosion(int x, int y);
-  void capture(int *tab, int x, int y, cellule c);
+  void capture(int x, int y, cellule c);
   void pose(cellule c);
 
 #endif
