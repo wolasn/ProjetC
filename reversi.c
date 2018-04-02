@@ -167,17 +167,12 @@ int checkligne(int x, int y, direction dir, cellule c)
 //explosion d'une bombe, met la case ainsi que celles autour à vide
 void explosion(int x, int y)
 {
-  if(x>0 && y>0){
-    grille[x-1][y-1]=grille[x-1][y]=grille[x][y-1]=vide;
-  }
-  if(x<N-1 && y<N-1){
-    grille[x+1][y+1]=grille[x+1][y]=grille[x][y+1]=vide;
-  }
-  if(x<N+1 && y>0){
-    grille[x+1][y-1]=vide;
-  }
-  if(x>0 && y<N-1){
-    grille[x-1][y+1]=vide;
+  direction dir;
+  for(int i=0;i<8;i++){
+    dir=rose[i].dir;
+    if(checkbords(x,y,dir)){
+      grille[x+dir.dirhori][y+dir.dirverti]=vide;
+    }
   }
   grille[x][y]=vide;
 }
@@ -197,6 +192,7 @@ void capture(int x, int y, cellule c)
 void pose(cellule c)
 {
   int x,y;
+
   do{
     printf("Entrez la case où vous souhaitez jouer au format x,y\n");
     scanf("%d,%d",&x,&y);
