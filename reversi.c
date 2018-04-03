@@ -16,20 +16,19 @@ static cellule **grille;
 //tableau de directions prédéfinies
 const direction
 nord={0,-1},
-sud={0,1},est={1,0},
+sud={0,1},
+est={1,0},
 ouest={-1,0},
 nordest={1,-1},
 nordouest={-1,-1},
 sudest={1,1},
 sudouest={-1,1};
 
-//à mettre en constante
 fleche *rose;
 
 //initialisation du tableau de directions
 void initrose()
 {
-  printf("Entrée initrose()\n");
   rose=malloc(sizeof(fleche)*8);
   rose[0].dir=nord;
   rose[1].dir=sud;
@@ -39,13 +38,11 @@ void initrose()
   rose[5].dir=nordouest;
   rose[6].dir=sudest;
   rose[7].dir=sudouest;
-  printf("Sortie initrose()\n");
 }
 
 //initialisation de la grille de jeu
 void initGrille(int M)
 {
-  printf("Entrée initGrille()\n");
   int randomX,randomY,milieu=(N/2)-1;
   srand(time(NULL));
 
@@ -83,7 +80,6 @@ void initGrille(int M)
     }while((((randomX >= milieu-1) && (randomX <= milieu+2)) && ((randomY >= milieu-1) && (randomY <= milieu+2))) || (grille[randomX][randomY]==bombe));
     grille[randomX][randomY]=bombe;
   }
-  printf("Sortie initGrille()\n");
 }
 
 //désallouages
