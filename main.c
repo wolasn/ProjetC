@@ -3,7 +3,9 @@
 
 int main()
 {
-  initGrille(7);
-  affichage();
-  terminateGrille();
+  cellule **grille;
+  
+  grille=initGrille(7);
+  affichage(grille);
+  terminateGrille(grille);
 }
