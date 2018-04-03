@@ -5,8 +5,8 @@
 
 
   cellule **initGrille(int M);
-  int terminateGrille();
+  int terminateGrille(cellule **grille);
   char getSymbole(cellule c);
-  int affichage();
+  int affichage(cellule **grille);
 
 #endif
