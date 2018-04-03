@@ -55,7 +55,7 @@ cellule **initGrille(int M)
 }
 
 //désallouage d'une grille
-int terminateGrille()
+int terminateGrille(cellule **grille)
 {
   for(int i=N-1;i>=0;i--){
     free(grille[i]);
@@ -82,7 +82,7 @@ char getSymbole(cellule c)
 }
 
 //affichage d'une grille sur la sortie standard
-int affichage()
+int affichage(cellule **grille)
 {
   for(int i=0;i<N;i++){
     for(int j=0;j<N;j++){
