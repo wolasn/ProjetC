@@ -10,7 +10,7 @@
 int main()
 {
   rose = initrose();
-  grille=initGrille(0);
+  grille=initGrille();
   tabjoueurs=initJoueurs();
   //ne rien changer avant
 

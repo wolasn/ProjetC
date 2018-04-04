@@ -7,7 +7,7 @@
 #define ERREUR_getSymbole 2
 #define mode 'D'
 //note : N pair et >= 6
-#define N 4
+#define N 8
 
 //renvoie le tableau de joueurs
 joueur *initJoueurs()
@@ -47,10 +47,10 @@ fleche *initrose()
 }
 
 //initialisation de la grille de jeu
-cellule **initGrille(int M)
+cellule **initGrille()
 {
   cellule **grille;
-  int randomX,randomY,milieu=(N/2)-1;
+  int randomX,randomY,nbbombes,milieu=(N/2)-1;
   srand(time(NULL));
 
   grille=malloc(N*sizeof(cellule*));
@@ -78,7 +78,11 @@ cellule **initGrille(int M)
   grille[milieu][milieu]=grille[milieu+1][milieu+1]=vert;
   grille[milieu+1][milieu]=grille[milieu][milieu+1]=rouge;
 
-  for(int i=1;i<=M;i++){
+  do{
+    printf("Combien voulez-vous de bombes ? (maximum %d)\n",(N*N)-16);
+    scanf("%d",&nbbombes);
+  }while(nbbombes>=(N*N)-16);
+  for(int i=1;i<=nbbombes;i++){
     do{
       randomX=rand()%N;
       randomY=rand()%N;
