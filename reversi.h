@@ -1,3 +1,4 @@
+
 #ifndef __REVERSI__
 #define __REVERSI__
 
