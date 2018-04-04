@@ -111,11 +111,11 @@ char getSymbole(cellule c)
 //affichage d'une grille sur la sortie standard
 void affichage(cellule **grille)
 {
-  printf("   ");
+  printf("\n   ");
   for(int k=0;k<N;k++){
     printf(" %d ",k);
   }
-  printf("\n");
+  printf(" y\n");
   for(int i=0;i<N;i++){
     printf(" %d ",i);
     for(int j=0;j<N;j++){
@@ -123,6 +123,7 @@ void affichage(cellule **grille)
     }
     printf("\n");
   }
+  printf(" x\n\n");
 }
 
 //pour v�rifier si l'on va sur un bord
@@ -188,6 +189,7 @@ void explosion(cellule **grille, fleche *rose, int x, int y)
     }
   }
   grille[x][y]=vide;
+  printf("Il y avait une bombe!\n");
 }
 
 //capture de pions enemies
@@ -208,7 +210,7 @@ void pose(cellule **grille, fleche *rose, cellule c)
 {
   int x,y,s=0;
   do{
-    printf("Entrez la case où vous souhaitez jouer au format x,y\n");
+    printf("Entrez la case où vous souhaitez jouer %c au format x,y\n",getSymbole(c));
     scanf("%d,%d",&x,&y);
     for(int i=0;i<8;i++){
       rose[i].nbcases=checkcapture(grille,x,y,rose[i].dir,c);

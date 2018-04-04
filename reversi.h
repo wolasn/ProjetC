@@ -7,6 +7,7 @@
     int dirhori;
     int dirverti;
   }direction;
+  //permet d'associer un nombre de cases à une direction
   typedef struct{
     direction dir;
     int nbcases;
