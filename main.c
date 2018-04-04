@@ -2,9 +2,6 @@
 #include <stdlib.h>
 #include "reversi.h"
 
-
-
-
   cellule **grille;
   fleche *rose;
 
@@ -18,5 +15,5 @@ int main()
   pose(grille,rose, vert);
   affichage(grille);
 
-  return 0;
+  return (0);
 }

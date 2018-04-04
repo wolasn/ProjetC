@@ -3,7 +3,6 @@
 #include <time.h>
 #include <stdlib.h>
 
-
 #define ERREUR_ALLOCATION_MEMOIRE 1
 #define ERREUR_getSymbole 2
 #define mode 'D'
@@ -11,23 +10,21 @@
 #define N 10
 
 
-
-
 //initialisation du tableau de directions
 fleche *initrose()
 {
-    fleche *rose;
-    //tableau de directions pr�d�finies
-const direction
-nord={0,-1},
-sud={0,1},
-est={1,0},
-ouest={-1,0},
-nordest={1,-1},
-nordouest={-1,-1},
-sudest={1,1},
-sudouest={-1,1};
+  fleche *rose;
 
+  //tableau de directions pr�d�finies
+  const direction
+  nord={0,-1},
+  sud={0,1},
+  est={1,0},
+  ouest={-1,0},
+  nordest={1,-1},
+  nordouest={-1,-1},
+  sudest={1,1},
+  sudouest={-1,1};
 
   rose=malloc(sizeof(fleche)*8);
   rose[0].dir=nord;
@@ -47,8 +44,6 @@ cellule **initGrille(int M)
   cellule **grille;
   int randomX,randomY,milieu=(N/2)-1;
   srand(time(NULL));
-
-
 
   grille=malloc(N*sizeof(cellule*));
   if(grille==NULL){
