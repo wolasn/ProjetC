@@ -10,10 +10,14 @@
 //note : N pair et >= 6
 #define N 10
 
-//notre plateau
-static cellule **grille;
 
-//tableau de directions prédéfinies
+
+
+//initialisation du tableau de directions
+fleche *initrose()
+{
+    fleche *rose;
+    //tableau de directions pr�d�finies
 const direction
 nord={0,-1},
 sud={0,1},
@@ -24,11 +28,7 @@ nordouest={-1,-1},
 sudest={1,1},
 sudouest={-1,1};
 
-fleche *rose;
 
-//initialisation du tableau de directions
-void initrose()
-{
   rose=malloc(sizeof(fleche)*8);
   rose[0].dir=nord;
   rose[1].dir=sud;
@@ -38,15 +38,17 @@ void initrose()
   rose[5].dir=nordouest;
   rose[6].dir=sudest;
   rose[7].dir=sudouest;
+  return rose;
 }
 
 //initialisation de la grille de jeu
-void initGrille(int M)
+cellule **initGrille(int M)
 {
+  cellule **grille;
   int randomX,randomY,milieu=(N/2)-1;
   srand(time(NULL));
 
-  initrose();
+
 
   grille=malloc(N*sizeof(cellule*));
   if(grille==NULL){
@@ -80,10 +82,11 @@ void initGrille(int M)
     }while((((randomX >= milieu-1) && (randomX <= milieu+2)) && ((randomY >= milieu-1) && (randomY <= milieu+2))) || (grille[randomX][randomY]==bombe));
     grille[randomX][randomY]=bombe;
   }
+  return(grille);
 }
 
-//désallouages
-int terminate()
+//d�sallouage d'une grille
+int terminateGrille(cellule **grille, fleche *rose)
 {
   for(int i=N-1;i>=0;i--){
     free(grille[i]);
@@ -93,7 +96,7 @@ int terminate()
   return(0);
 }
 
-//traduction du type case en caractère
+//traduction du type case en caract�re
 char getSymbole(cellule c)
 {
   switch (c) {
@@ -111,9 +114,8 @@ char getSymbole(cellule c)
 }
 
 //affichage d'une grille sur la sortie standard
-void affichage()
+void affichage(cellule **grille)
 {
-  system("clear");
   for(int i=0;i<N;i++){
     for(int j=0;j<N;j++){
       printf("[%c]",getSymbole(grille[i][j]));
@@ -122,7 +124,7 @@ void affichage()
   }
 }
 
-//pour vérifier si l'on va sur un bord
+//pour v�rifier si l'on va sur un bord
 //renvoie 0 si c'est le cas
 int checkbords(int i, int j, direction dir)
 {
@@ -140,8 +142,8 @@ int checkbords(int i, int j, direction dir)
   return(1);
 }
 
-//renvoie le nombre de pion capturés avec une pose dans une direction donnée
-int checkcapture(int x, int y, direction dir, cellule c)
+//renvoie le nombre de pion captur�s avec une pose dans une direction donn�e
+int checkcapture(cellule **grille, int x, int y, direction dir, cellule c)
 {
   int i=x,j=y;
   cellule suivante;
@@ -174,8 +176,8 @@ int checkcapture(int x, int y, direction dir, cellule c)
   }
 }
 
-//explosion d'une bombe, affecte vide à la case ainsi qu'à celles autour d'elle
-void explosion(int x, int y)
+//explosion d'une bombe, affecte vide � la case ainsi qu'� celles autour d'elle
+void explosion(cellule **grille, fleche *rose, int x, int y)
 {
   direction dir;
   for(int i=0;i<8;i++){
@@ -187,8 +189,9 @@ void explosion(int x, int y)
   grille[x][y]=vide;
 }
 
+
 //capture de pions enemies
-void capture(int x, int y, cellule c)
+void capture(cellule **grille, fleche *rose, int x, int y, cellule c)
 {int dir1,dir2;
   for(int i=0;i<8;i++){
     dir1=(rose[i].dir.dirhori);
@@ -200,20 +203,21 @@ void capture(int x, int y, cellule c)
 }
 
 //pose d'un pion
-void pose(cellule c)
+void pose(cellule **grille, fleche *rose, cellule c)
 {
   int x,y,s;
   do{
-    printf("Entrez la case où vous souhaitez jouer au format x,y\n");
-    scanf("%d,%d",&x,&y);
+    printf("Entrez la case o� vous souhaitez jouer au format x,y\n");
+    scanf("%d",&x);
+    scanf("%d",&y);
     for(int i=0;i<8;i++){
-      s+=rose[i].nbcases=checkcapture(x,y,rose[i].dir,c);
+      s+=rose[i].nbcases=checkcapture(grille,x,y,rose[i].dir,c);
     }
   }while(!s);
-
+  printf("test");
   if(grille[x][y]==bombe){
-    explosion(x,y);
+    explosion(grille,rose,x,y);
   }else{
-    capture(x,y,c);
+    capture(grille,rose,x,y,c);
   }
 }
