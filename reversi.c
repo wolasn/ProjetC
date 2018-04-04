@@ -266,10 +266,10 @@ int verifcouprestant(cellule **grille, fleche *rose, joueur j)
             y=j+dir.dirverti;
             dirinverse=directioninverse(rose,dir);
             if(((c==vide) || (c==bombe)) && (checkcapture(grille,x,y,dirinverse,couleur)>0)){
-              printf("De %d,%d vers la direction %d,%d, je peux l'avoir\n",x,y,dirinverse.dirhori,dirinverse.dirverti);
+              printf("De %d,%d je peux l'avoir\n",x,y,dirinverse.dirhori,dirinverse.dirverti);
               return(1);
             }
-            printf("De %d,%d vers la direction %d,%d c'est niet\n",x,y,dirinverse.dirhori,dirinverse.dirverti);
+            printf("De %d,%d c'est niet\n",x,y,dirinverse.dirhori,dirinverse.dirverti);
           }
         }
       }
