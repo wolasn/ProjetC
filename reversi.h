@@ -11,6 +11,7 @@
     int nbcases;
   }fleche;
 
+  void initrose();
   void initGrille(int M);
   int terminate();
   char getSymbole(cellule c);
