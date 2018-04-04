@@ -111,7 +111,13 @@ char getSymbole(cellule c)
 //affichage d'une grille sur la sortie standard
 void affichage(cellule **grille)
 {
+  printf("   ");
+  for(int k=0;k<N;k++){
+    printf(" %d ",k);
+  }
+  printf("\n");
   for(int i=0;i<N;i++){
+    printf(" %d ",i);
     for(int j=0;j<N;j++){
       printf("[%c]",getSymbole(grille[i][j]));
     }
@@ -147,7 +153,7 @@ int checkcapture(cellule **grille, int x, int y, direction dir, cellule c)
   {
     return(0);
   }else{
-    suivante=(grille[i+dir.dirhori][y+dir.dirverti]);
+    suivante=(grille[i+dir.dirhori][j+dir.dirverti]);
     if(suivante==vide || suivante==bombe || suivante==c){
       return(0);
     }
@@ -158,7 +164,7 @@ int checkcapture(cellule **grille, int x, int y, direction dir, cellule c)
     {
       return(0);
     }else{
-      suivante=(grille[i+dir.dirhori][y+dir.dirverti]);
+      suivante=(grille[i+dir.dirhori][j+dir.dirverti]);
       if(suivante==vide || suivante==bombe){
         return(0);
       }
@@ -184,14 +190,14 @@ void explosion(cellule **grille, fleche *rose, int x, int y)
   grille[x][y]=vide;
 }
 
-
 //capture de pions enemies
 void capture(cellule **grille, fleche *rose, int x, int y, cellule c)
-{int dir1,dir2;
+{
+  int dir1,dir2;
   for(int i=0;i<8;i++){
     dir1=(rose[i].dir.dirhori);
     dir2=(rose[i].dir.dirverti);
-    for(int j=1;j<rose[i].nbcases;j++){
+    for(int j=0;j<=rose[i].nbcases;j++){
       grille[x+dir1*j][y+dir2*j]=c;
     }
   }
@@ -200,16 +206,15 @@ void capture(cellule **grille, fleche *rose, int x, int y, cellule c)
 //pose d'un pion
 void pose(cellule **grille, fleche *rose, cellule c)
 {
-  int x,y,s;
+  int x,y,s=0;
   do{
-    printf("Entrez la case o� vous souhaitez jouer au format x,y\n");
-    scanf("%d",&x);
-    scanf("%d",&y);
+    printf("Entrez la case où vous souhaitez jouer au format x,y\n");
+    scanf("%d,%d",&x,&y);
     for(int i=0;i<8;i++){
-      s+=rose[i].nbcases=checkcapture(grille,x,y,rose[i].dir,c);
+      rose[i].nbcases=checkcapture(grille,x,y,rose[i].dir,c);
+      s+=rose[i].nbcases;
     }
-  }while(!s);
-  printf("test");
+  }while(s==0);
   if(grille[x][y]==bombe){
     explosion(grille,rose,x,y);
   }else{
