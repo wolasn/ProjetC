@@ -32,6 +32,6 @@
   int verifcouprestant(cellule **grille, fleche *rose, joueur j);
   direction directioninverse(fleche *rose, direction dir);
   int checkfin(cellule **grille, fleche *rose, joueur *tabjoueurs, int cpt);
-
+  void scores(cellule **grille, joueur *tabjoueurs);
 
 #endif
