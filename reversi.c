@@ -7,8 +7,17 @@
 #define ERREUR_getSymbole 2
 #define mode 'D'
 //note : N pair et >= 6
-#define N 10
+#define N 4
 
+//renvoie le tableau de joueurs
+joueur *initJoueurs()
+{
+  joueur *tabjoueurs=malloc(sizeof(joueur)*2);
+  tabjoueurs[0].couleur=vert;
+  tabjoueurs[1].couleur=rouge;
+  tabjoueurs[0].nbcoups=4;
+  return(tabjoueurs);
+}
 
 //initialisation du tableau de directions
 fleche *initrose()
@@ -32,9 +41,9 @@ fleche *initrose()
   rose[2].dir=est;
   rose[3].dir=ouest;
   rose[4].dir=nordest;
-  rose[5].dir=nordouest;
-  rose[6].dir=sudest;
-  rose[7].dir=sudouest;
+  rose[5].dir=sudouest;
+  rose[6].dir=nordouest;
+  rose[7].dir=sudest;
   return rose;
 }
 
@@ -111,6 +120,7 @@ char getSymbole(cellule c)
 //affichage d'une grille sur la sortie standard
 void affichage(cellule **grille)
 {
+  system("clear");
   printf("\n   ");
   for(int k=0;k<N;k++){
     printf(" %d ",k);
@@ -206,20 +216,86 @@ void capture(cellule **grille, fleche *rose, int x, int y, cellule c)
 }
 
 //pose d'un pion
-void pose(cellule **grille, fleche *rose, cellule c)
+//renvoie 0 si le joueur n'a pas pu jouer
+int pose(cellule **grille, fleche *rose, joueur j)
 {
   int x,y,s=0;
-  do{
-    printf("Entrez la case où vous souhaitez jouer %c au format x,y\n",getSymbole(c));
+
+  printf("C'est à %c de jouer\n",getSymbole(j.couleur));
+
+  if(verifcouprestant(grille,rose,j)==0){
+    return(0);
+  }
+
+  while(s==0){
+    printf("Entrez la case où vous souhaitez jouer %c (au format x,y)\n",getSymbole(j.couleur));
     scanf("%d,%d",&x,&y);
     for(int i=0;i<8;i++){
-      rose[i].nbcases=checkcapture(grille,x,y,rose[i].dir,c);
+      rose[i].nbcases=checkcapture(grille,x,y,rose[i].dir,j.couleur);
       s+=rose[i].nbcases;
     }
-  }while(s==0);
+  }
   if(grille[x][y]==bombe){
     explosion(grille,rose,x,y);
   }else{
-    capture(grille,rose,x,y,c);
+    capture(grille,rose,x,y,j.couleur);
   }
+  return(1);
+}
+
+//renvoie 1 si le joueur a au moins un coup jouable
+int verifcouprestant(cellule **grille, fleche *rose, joueur j)
+{
+  direction dir,dirinverse;
+  cellule couleur=j.couleur,c;
+  int x,y;
+
+  for(int i=0;i<N;i++){
+    for(int j=0;j<N;j++){
+      c=grille[i][j];
+      if((c!=couleur) && (c!=bombe) && (c!=vide)){
+        printf("J'ai trouvé un enemie en %d,%d\n",i,j);
+        for(int k=0;k<8;k++){
+          dir=rose[k].dir;
+          if(checkbords(i,j,dir)){
+            c=grille[i+dir.dirhori][j+dir.dirverti];
+            x=i+dir.dirhori;
+            y=j+dir.dirverti;
+            dirinverse=directioninverse(rose,dir);
+            if(((c==vide) || (c==bombe)) && (checkcapture(grille,x,y,dirinverse,couleur)>0)){
+              printf("De %d,%d vers la direction %d,%d, je peux l'avoir\n",x,y,dirinverse.dirhori,dirinverse.dirverti);
+              return(1);
+            }
+            printf("De %d,%d vers la direction %d,%d c'est niet\n",x,y,dirinverse.dirhori,dirinverse.dirverti);
+          }
+        }
+      }
+    }
+  }
+  return(0);
+}
+
+//renvoie la direction inverse
+direction directioninverse(fleche *rose, direction dir)
+{
+  direction dirinverse;
+
+  dirinverse.dirhori=-(dir.dirhori);
+  dirinverse.dirverti=-(dir.dirverti);
+
+  return(dirinverse);
+}
+
+//renvoie le prochain l'indice du prochain joueur pouvant joueur
+//renvoie -1 s'il n'y en a aucun
+int checkfin(cellule **grille, fleche *rose, joueur *tabjoueurs, int cpt)
+{
+  int nbjoueurs=2;
+
+  for(int k=cpt;k<nbjoueurs;k++,(cpt++)%2){
+    if(verifcouprestant(grille,rose,tabjoueurs[k])!=0){
+      return(k);
+    };
+  }
+  return(-1);
 }

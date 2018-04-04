@@ -4,19 +4,25 @@
 
   cellule **grille=NULL;
   fleche *rose=NULL;
-  int fini=0;
+  int cpt=0,res;
+  joueur *tabjoueurs;
 
 int main()
 {
   rose = initrose();
-  grille=initGrille(13);
+  grille=initGrille(0);
+  tabjoueurs=initJoueurs();
   //ne rien changer avant
 
-  while(!fini){
+  while(cpt!=-1){
     affichage(grille);
-    pose(grille,rose,vert);
-    affichage(grille);
-    pose(grille,rose,rouge);
+    res=pose(grille,rose,tabjoueurs[cpt]);
+    cpt=(cpt+1)%2;
+    printf("CPT : %d\n",cpt);
+    if(res==0){
+      printf("AH?\n");
+      cpt=checkfin(grille,rose,tabjoueurs,cpt);
+    }
   }
 
   //ne rien changer après
