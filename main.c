@@ -1,9 +1,18 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "reversi.h"
 
+  cellule **grille=NULL;
+  fleche *rose=NULL;
 
 int main()
 {
-  initGrille(7);
-  affichage();
-  terminateGrille();
+
+  rose = initrose();
+  grille=initGrille(7);
+  affichage(grille);
+  pose(grille,rose,vert);
+  affichage(grille);
+  terminateGrille(grille,rose);
+  return (0);
 }
