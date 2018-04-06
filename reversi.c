@@ -69,6 +69,7 @@ cellule **allocgrille()
       exit(ERREUR_ALLOCATION_MEMOIRE);
     }
   }
+  return(grille);
 }
 
 //initialisation du plateau de jeu
@@ -77,7 +78,7 @@ cellule **initplateau()
   int randomX,randomY,nbbombes,milieu=(N/2)-1;
   cellule **plateau;
 
-  plateau=allocplateau();
+  plateau=allocgrille();
 
   for(int i=0;i<N;i++){
     for(int j=0;j<N;j++){
@@ -88,8 +89,8 @@ cellule **initplateau()
   //XXXXXXXXXXXXXXXXXXXXXXXXXXXX
   //XXXCOULEURS NON GENERIQUEXXX
   //XXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  grille[milieu][milieu]=grille[milieu+1][milieu+1]=vert;
-  grille[milieu+1][milieu]=grille[milieu][milieu+1]=rouge;
+  plateau[milieu][milieu]=plateau[milieu+1][milieu+1]=vert;
+  plateau[milieu+1][milieu]=plateau[milieu][milieu+1]=rouge;
 
   do{
     printf("Combien voulez-vous de bombes ? (maximum %d)\n",(N*N)-16);
@@ -181,7 +182,7 @@ int checkcapture(cellule **plateau, int x, int y, direction dir, cellule c)
   {
     return(0);
   }else{
-    suivante=(grille[i+dir.dirhori][j+dir.dirverti]);
+    suivante=(plateau[i+dir.dirhori][j+dir.dirverti]);
     if(suivante==vide || suivante==bombe || suivante==c || suivante==trou){
       return(0);
     }
@@ -192,7 +193,7 @@ int checkcapture(cellule **plateau, int x, int y, direction dir, cellule c)
     {
       return(0);
     }else{
-      suivante=(grille[i+dir.dirhori][j+dir.dirverti]);
+      suivante=(plateau[i+dir.dirhori][j+dir.dirverti]);
       if(suivante==vide || suivante==bombe || suivante==trou){
         return(0);
       }
@@ -205,7 +206,7 @@ int checkcapture(cellule **plateau, int x, int y, direction dir, cellule c)
   }
 }
 
-void init3x3(cellule **grille, fleche *rose, int x, int y)
+void init3x3(cellule **plateau, fleche *rose, int x, int y)
 {
   direction dir;
   for(int i=0;i<8;i++){
@@ -217,7 +218,7 @@ void init3x3(cellule **grille, fleche *rose, int x, int y)
 }
 
 //explosion d'une bombe à effet aléatoire
-void explosion(cellule **grille, cellule couleur, fleche *rose, int x, int y)
+void explosion(cellule **plateau, cellule couleur, fleche *rose, int x, int y)
 {
   direction dir;
   cellule c;
@@ -230,12 +231,12 @@ void explosion(cellule **grille, cellule couleur, fleche *rose, int x, int y)
             int i=x,j=y;
             while(checkbords(i,j,dir)){
               i+=dir.dirhori;j+=dir.dirverti;
-              c=grille[i][j];
+              c=plateau[i][j];
               if(c!=vide && c!=bombe && c!=trou){
-                grille[i][j]=vide;
+                plateau[i][j]=vide;
               }
             }
-            grille[x][y]=couleur;
+            plateau[x][y]=couleur;
             break;
     case 1 :
             //change la couleur du pion qui vient d'être posé
@@ -244,25 +245,25 @@ void explosion(cellule **grille, cellule couleur, fleche *rose, int x, int y)
             //XXXCOULEURS NON GENERIQUEXXX
             //XXXXXXXXXXXXXXXXXXXXXXXXXXXX
             if(couleur==vert){
-              grille[x][y]=rouge;
+              plateau[x][y]=rouge;
             }else{
-              grille[x][y]=vert;
+              plateau[x][y]=vert;
             }
             break;
     case 2 :
             //seul reste le pion joué
-            init3x3(grille,rose,x,y);
-            grille[x][y]=couleur;
+            init3x3(plateau,rose,x,y);
+            plateau[x][y]=couleur;
             break;
     case 3 :
             //explosion normale + case inutilisable
-            init3x3(grille,rose,x,y);
-            grille[x][y]=trou;
+            init3x3(plateau,rose,x,y);
+            plateau[x][y]=trou;
             break;
     case 4 :
             //explosion normale
-            init3x3(grille,rose,x,y);
-            grille[x][y]=vide;
+            init3x3(plateau,rose,x,y);
+            plateau[x][y]=vide;
             break;
     default :
             printf("explosion() : valeur aléatoire incorrecte");
@@ -304,8 +305,8 @@ int pose(cellule **plateau, fleche *rose, joueur j)
       s+=rose[i].nbcases;
     }
   }
-  if(grille[x][y]==bombe){
-    explosion(grille,j.couleur,rose,x,y);
+  if(plateau[x][y]==bombe){
+    explosion(plateau,j.couleur,rose,x,y);
   }else{
     capture(plateau,rose,x,y,j.couleur);
   }
@@ -321,7 +322,7 @@ int verifcouprestant(cellule **plateau, fleche *rose, joueur j)
 
   for(int i=0;i<N;i++){
     for(int j=0;j<N;j++){
-      c=grille[i][j];
+      c=plateau[i][j];
       if((c!=couleur) && (c!=bombe) && (c!=vide) && (c!=trou)){
         printf("J'ai trouvé un enemie en %d,%d\n",i,j);
         for(int k=0;k<8;k++){
@@ -331,7 +332,7 @@ int verifcouprestant(cellule **plateau, fleche *rose, joueur j)
             x=i+dir.dirhori;
             y=j+dir.dirverti;
             dirinverse=directioninverse(rose,dir);
-            if(((c==vide) || (c==bombe)) && (checkcapture(grille,x,y,dirinverse,couleur)>0)){
+            if(((c==vide) || (c==bombe)) && (checkcapture(plateau,x,y,dirinverse,couleur)>0)){
               printf("De %d,%d je peux l'avoir\n",x,y);
               return(1);
             }
