@@ -108,6 +108,8 @@ cellule **initplateau()
   plateau[milieu][milieu]=plateau[milieu+1][milieu+1]=vert;
   plateau[milieu+1][milieu]=plateau[milieu][milieu+1]=rouge;
 
+  system("clear");
+
   do{
     printf("Combien voulez-vous de bombes ? (maximum %d)\n",(N*N)-16);
     scanf("%d",&nbbombes);
@@ -155,8 +157,8 @@ char getSymbole(cellule c)
 //affichage d'une plateau sur la sortie standard
 void affichage(cellule **plateau, int tour)
 {
-  system("clear");
-  printf("\nTour : %d\n\n",tour);
+  //system("clear");
+  printf("\nTour : %d\n\n   ",tour);
   for(int k=0;k<N;k++){
     printf(" %d ",k);
   }
@@ -346,6 +348,7 @@ int trahison(cellule **plateau, fleche *rose, int **age, int tour)
               rose[k].nbcases=checkcapture(plateau,i,j,rose[k].dir,couleur);
             }
             capture(plateau,rose,i,j,age,couleur);
+            printf("%d,%d a trahi!JUDAS!\n",i,j);
             return(1);
           }
           somme-=currentage;
@@ -376,6 +379,8 @@ int pose(cellule **plateau, fleche *rose, joueur j, int **age, int tour)
       s+=rose[i].nbcases;
     }
   }
+
+  system("clear");
 
   if(plateau[x][y]==bombe){
     explosion(plateau,j.couleur,rose,x,y,age);
