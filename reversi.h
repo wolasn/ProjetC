@@ -24,7 +24,7 @@
   cellule **initplateau();
   int terminate(cellule **plateau, fleche *rose, int **age);
   char getSymbole(cellule c);
-  void affichage(cellule **plateau);
+  void affichage(cellule **plateau, int tour);
   int checkbords(int i, int j, direction dir);
   int checkcapture(cellule **plateau, int x, int y, direction dir, cellule c);
   void init3x3(cellule **plateau, fleche *rose, int x, int y, int **age);

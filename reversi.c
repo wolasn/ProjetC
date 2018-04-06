@@ -153,10 +153,10 @@ char getSymbole(cellule c)
 }
 
 //affichage d'une plateau sur la sortie standard
-void affichage(cellule **plateau)
+void affichage(cellule **plateau, int tour)
 {
   system("clear");
-  printf("\n   ");
+  printf("\nTour : %d\n\n",tour);
   for(int k=0;k<N;k++){
     printf(" %d ",k);
   }

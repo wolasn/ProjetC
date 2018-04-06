@@ -17,8 +17,8 @@ int main()
   //ne rien changer avant
 
   while(cpt!=-1){
-    affichage(plateau);
     tour++;
+    affichage(plateau,tour);
     res=pose(plateau,rose,tabjoueurs[cpt],age,tour);
     cpt=(cpt+1)%2;
     if(res==0){
