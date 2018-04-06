@@ -130,7 +130,7 @@ char getSymbole(cellule c)
 //affichage d'une grille sur la sortie standard
 void affichage(cellule **grille)
 {
-  //system("clear");
+  system("clear");
   printf("\n   ");
   for(int k=0;k<N;k++){
     printf(" %d ",k);
@@ -216,7 +216,7 @@ void explosion(cellule **grille, cellule couleur, fleche *rose, int x, int y)
   cellule c;
   srand(time(NULL));
 
-  switch(0){
+  switch(rand()%5){
     case 0 :
             //laser ultra puissant
             dir=rose[rand()%8].dir;
