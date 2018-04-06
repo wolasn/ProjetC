@@ -4,8 +4,8 @@
 
   typedef enum{vide=0,trou,bombe,vert,rouge}cellule;
   typedef struct{
-    int dirhori;
-    int dirverti;
+    int hori;
+    int verti;
   }direction;
   //permet d'associer un nombre de cases à une direction
   typedef struct{
