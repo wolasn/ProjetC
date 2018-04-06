@@ -3,21 +3,23 @@
 #include "reversi.h"
 
   cellule **plateau=NULL;
+  int **age=NULL;
   fleche *rose=NULL;
-  int cpt=0,res;
+  int cpt=0,res,tour=0;
   joueur *tabjoueurs;
-  int tab[5]={0};
 
 int main()
 {
   rose = initrose();
   plateau=initplateau();
+  age=initage();
   tabjoueurs=initJoueurs();
   //ne rien changer avant
 
   while(cpt!=-1){
     affichage(plateau);
-    res=pose(plateau,rose,tabjoueurs[cpt]);
+    tour++;
+    res=pose(plateau,rose,tabjoueurs[cpt],age,tour);
     cpt=(cpt+1)%2;
     if(res==0){
       cpt=checkfin(plateau,rose,tabjoueurs,cpt);
@@ -26,6 +28,6 @@ int main()
   scores(plateau,tabjoueurs);
 
   //ne rien changer après
-  terminate(plateau,rose);
+  terminate(plateau,rose,age);
   return (0);
 }

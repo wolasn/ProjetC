@@ -2,10 +2,12 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #define ERREUR_ALLOCATION_MEMOIRE 1
 #define ERREUR_getSymbole 2
 #define mode 'D'
+#define signal 4
 //note : N pair et >= 6
 #define N 6
 
@@ -13,9 +15,9 @@
 joueur *initJoueurs()
 {
   joueur *tabjoueurs=malloc(sizeof(joueur)*2);
-  //XXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  //XXXCOULEURS NON GENERIQUEXXX
-  //XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  //XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  //XXXCOULEURS NON GENERIQUESXXX
+  //XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   tabjoueurs[0].couleur=vert;
   tabjoueurs[1].couleur=rouge;
   return(tabjoueurs);
@@ -49,46 +51,60 @@ fleche *initrose()
   return rose;
 }
 
-cellule **allocgrille()
+int **initage()
 {
-  cellule **grille;
-  srand(time(NULL));
+  int **age,i,j;
 
-  grille=malloc(N*sizeof(cellule*));
-  if(grille==NULL){
+  age=malloc(N*sizeof(int*));
+  if(age==NULL){
     exit(ERREUR_ALLOCATION_MEMOIRE);
   }
 
-  for(int i=0;i<N;i++){
-    grille[i]=malloc(N*sizeof(cellule));
-    if(grille[i]==NULL){
-      for(int j=i-1;j>=0;j--){
-        free(grille[j]);
+  for(i=0;i<N;i++){
+    age[i]=malloc(N*sizeof(int));
+    if(age[i]==NULL){
+      for(j=i-1;j>=0;j--){
+        free(age[j]);
       }
-      free(grille);
+      free(age);
       exit(ERREUR_ALLOCATION_MEMOIRE);
     }
+    for(j=0;j<N;j++){
+      age[i][j]=0;
+    }
   }
-  return(grille);
+  return(age);
 }
 
-//initialisation du plateau de jeu
+//initialisation du age de jeu
 cellule **initplateau()
 {
-  int randomX,randomY,nbbombes,milieu=(N/2)-1;
+  int randomX,randomY,nbbombes,i,j,milieu=(N/2)-1;
   cellule **plateau;
+  srand(time(NULL));
 
-  plateau=allocgrille();
+  plateau=malloc(N*sizeof(cellule*));
+  if(plateau==NULL){
+    exit(ERREUR_ALLOCATION_MEMOIRE);
+  }
 
-  for(int i=0;i<N;i++){
-    for(int j=0;j<N;j++){
+  for(i=0;i<N;i++){
+    plateau[i]=malloc(N*sizeof(cellule));
+    if(plateau[i]==NULL){
+      for(j=i-1;j>=0;j--){
+        free(plateau[j]);
+      }
+      free(plateau);
+      exit(ERREUR_ALLOCATION_MEMOIRE);
+    }
+    for(j=0;j<N;j++){
       plateau[i][j]=vide;
     }
   }
 
-  //XXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  //XXXCOULEURS NON GENERIQUEXXX
-  //XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  //XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  //XXXCOULEURS NON GENERIQUESXXX
+  //XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   plateau[milieu][milieu]=plateau[milieu+1][milieu+1]=vert;
   plateau[milieu+1][milieu]=plateau[milieu][milieu+1]=rouge;
 
@@ -107,10 +123,11 @@ cellule **initplateau()
 }
 
 //d�sallouage d'une plateau
-int terminate(cellule **plateau, fleche *rose)
+int terminate(cellule **plateau, fleche *rose, int **age)
 {
   for(int i=N-1;i>=0;i--){
     free(plateau[i]);
+    free(age[i]);
   }
   free(plateau);
   free(rose);
@@ -206,19 +223,20 @@ int checkcapture(cellule **plateau, int x, int y, direction dir, cellule c)
   }
 }
 
-void init3x3(cellule **plateau, fleche *rose, int x, int y)
+void init3x3(cellule **plateau, fleche *rose, int x, int y, int **age)
 {
   direction dir;
   for(int i=0;i<8;i++){
     dir=rose[i].dir;
     if(checkbords(x,y,dir)){
       plateau[x+dir.dirhori][y+dir.dirverti]=vide;
+      age[x+dir.dirhori][y+dir.dirverti]=0;
     }
   }
 }
 
 //explosion d'une bombe à effet aléatoire
-void explosion(cellule **plateau, cellule couleur, fleche *rose, int x, int y)
+void explosion(cellule **plateau, cellule couleur, fleche *rose, int x, int y, int **age)
 {
   direction dir;
   cellule c;
@@ -234,36 +252,42 @@ void explosion(cellule **plateau, cellule couleur, fleche *rose, int x, int y)
               c=plateau[i][j];
               if(c!=vide && c!=bombe && c!=trou){
                 plateau[i][j]=vide;
+                age[i][j]=0;
               }
             }
             plateau[x][y]=couleur;
+            age[x][y]=1;
             break;
     case 1 :
             //change la couleur du pion qui vient d'être posé
             //REGLE OPTIONNELLE : on capture après ça
-            //XXXXXXXXXXXXXXXXXXXXXXXXXXXX
-            //XXXCOULEURS NON GENERIQUEXXX
-            //XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+            //XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+            //XXXCOULEURS NON GENERIQUESXXX
+            //XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
             if(couleur==vert){
               plateau[x][y]=rouge;
             }else{
               plateau[x][y]=vert;
             }
+            age[x][y]=1;
             break;
     case 2 :
             //seul reste le pion joué
-            init3x3(plateau,rose,x,y);
+            init3x3(plateau,rose,x,y,age);
             plateau[x][y]=couleur;
+            age[x][y]=1;
             break;
     case 3 :
             //explosion normale + case inutilisable
-            init3x3(plateau,rose,x,y);
+            init3x3(plateau,rose,x,y,age);
             plateau[x][y]=trou;
+            age[x][y]=0;
             break;
     case 4 :
             //explosion normale
-            init3x3(plateau,rose,x,y);
+            init3x3(plateau,rose,x,y,age);
             plateau[x][y]=vide;
+            age[x][y]=0;
             break;
     default :
             printf("explosion() : valeur aléatoire incorrecte");
@@ -273,7 +297,7 @@ void explosion(cellule **plateau, cellule couleur, fleche *rose, int x, int y)
 }
 
 //capture de pions enemies
-void capture(cellule **plateau, fleche *rose, int x, int y, cellule c)
+void capture(cellule **plateau, fleche *rose, int x, int y, int **age, cellule c)
 {
   int dir1,dir2;
   for(int i=0;i<8;i++){
@@ -281,13 +305,60 @@ void capture(cellule **plateau, fleche *rose, int x, int y, cellule c)
     dir2=(rose[i].dir.dirverti);
     for(int j=0;j<=rose[i].nbcases;j++){
       plateau[x+dir1*j][y+dir2*j]=c;
+      age[x+dir1*j][y+dir2*j]=1;
     }
   }
 }
 
+//incrémente l'age des pions, déclenche les trahisons puis en gère les répercussions
+//return 0 s'il n'y a pas eu de trahison
+int trahison(cellule **plateau, fleche *rose, int **age, int tour)
+{
+  int somme=0,i,j,currentage;
+  cellule couleur;
+
+  for(i=0;i<N;i++){
+    for(j=0;j<N;j++){
+      if(age[i][j]>0){
+        age[i][j]++;
+        somme+=age[i][j];
+      }
+    }
+  }
+  if(tour>=signal){
+    srand(time(NULL));
+    for(i=0;i<N;i++){
+      for(j=0;j<N;j++){
+        currentage=age[i][j];
+        if(currentage>0){
+          if((((float)rand()/INT_MAX)*somme) <= (float)currentage){
+            couleur=plateau[i][j];
+            //XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+            //XXXCOULEURS NON GENERIQUESXXX
+            //XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+            if(couleur==vert){
+              plateau[i][j]=couleur=rouge;
+            }else{
+              plateau[i][j]=couleur=vert;
+            }
+            age[i][j]=1;
+            for(int k=0;k<8;k++){
+              rose[k].nbcases=checkcapture(plateau,i,j,rose[k].dir,couleur);
+            }
+            capture(plateau,rose,i,j,age,couleur);
+            return(1);
+          }
+          somme-=currentage;
+        }
+      }
+    }
+  }
+  return(0);
+}
+
 //pose d'un pion
 //renvoie 0 si le joueur n'a pas pu jouer
-int pose(cellule **plateau, fleche *rose, joueur j)
+int pose(cellule **plateau, fleche *rose, joueur j, int **age, int tour)
 {
   int x,y,s=0;
 
@@ -305,11 +376,15 @@ int pose(cellule **plateau, fleche *rose, joueur j)
       s+=rose[i].nbcases;
     }
   }
+
   if(plateau[x][y]==bombe){
-    explosion(plateau,j.couleur,rose,x,y);
+    explosion(plateau,j.couleur,rose,x,y,age);
   }else{
-    capture(plateau,rose,x,y,j.couleur);
+    capture(plateau,rose,x,y,age,j.couleur);
   }
+
+  trahison(plateau,rose,age,tour);
+
   return(1);
 }
 
