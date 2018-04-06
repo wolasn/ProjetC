@@ -6,6 +6,9 @@
   fleche *rose=NULL;
   int cpt=0,res;
   joueur *tabjoueurs;
+  int tab[5]={0};
+
+
 
 int main()
 {
@@ -25,6 +28,6 @@ int main()
   scores(grille,tabjoueurs);
 
   //ne rien changer après
-  terminateGrille(grille,rose);
+  terminate(grille,rose);
   return (0);
 }
