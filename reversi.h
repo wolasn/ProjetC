@@ -15,7 +15,7 @@
 
   fleche *initrose();
   cellule **initGrille(int M);
-  int terminateGrille(cellule **grille, fleche *rose);
+  int terminate(cellule **grille, fleche *rose);
   char getSymbole(cellule c);
   void affichage(cellule **grille);
 

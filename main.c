@@ -13,6 +13,6 @@ int main()
   affichage(grille);
   pose(grille,rose,vert);
   affichage(grille);
-  terminateGrille(grille,rose);
+  terminate(grille,rose);
   return (0);
 }

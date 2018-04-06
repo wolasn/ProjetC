@@ -81,7 +81,7 @@ cellule **initGrille(int M)
 }
 
 //d�sallouage d'une grille
-int terminateGrille(cellule **grille, fleche *rose)
+int terminate(cellule **grille, fleche *rose)
 {
   for(int i=N-1;i>=0;i--){
     free(grille[i]);
