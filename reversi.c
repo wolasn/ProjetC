@@ -403,7 +403,7 @@ int verifcouprestant(cellule **plateau, fleche *rose, joueur j)
   for(int i=0;i<N;i++){
     for(int j=0;j<N;j++){
       c=plateau[i][j];
-      if((c!=couleur) && (c!=bombe) && (c!=vide) && (c!=trou)){
+      if(c!=couleur && c!=bombe && c!=vide && c!=trou){
         printf("J'ai trouvé un enemie en %d,%d\n",i,j);
         for(int k=0;k<8;k++){
           dir=rose[k].dir;
@@ -412,7 +412,7 @@ int verifcouprestant(cellule **plateau, fleche *rose, joueur j)
             x=i+dir.dirhori;
             y=j+dir.dirverti;
             dirinverse=directioninverse(rose,dir);
-            if(((c==vide) || (c==bombe)) && (checkcapture(plateau,x,y,dirinverse,couleur)>0)){
+            if((c==vide || c==bombe) && (checkcapture(plateau,x,y,dirinverse,couleur)>0)){
               printf("De %d,%d je peux l'avoir\n",x,y);
               return(1);
             }
