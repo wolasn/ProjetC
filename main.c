@@ -6,6 +6,7 @@
   fleche *rose=NULL;
   int cpt=0,res;
   joueur *tabjoueurs;
+  int tab[5]={0};
 
 int main()
 {

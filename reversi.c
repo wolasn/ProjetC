@@ -7,12 +7,15 @@
 #define ERREUR_getSymbole 2
 #define mode 'D'
 //note : N pair et >= 6
-#define N 8
+#define N 6
 
 //renvoie le tableau de joueurs
 joueur *initJoueurs()
 {
   joueur *tabjoueurs=malloc(sizeof(joueur)*2);
+  //XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  //XXXCOULEURS NON GENERIQUEXXX
+  //XXXXXXXXXXXXXXXXXXXXXXXXXXXX
   tabjoueurs[0].couleur=vert;
   tabjoueurs[1].couleur=rouge;
   return(tabjoueurs);
@@ -82,8 +85,11 @@ cellule **initplateau()
     }
   }
 
-  plateau[milieu][milieu]=plateau[milieu+1][milieu+1]=vert;
-  plateau[milieu+1][milieu]=plateau[milieu][milieu+1]=rouge;
+  //XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  //XXXCOULEURS NON GENERIQUEXXX
+  //XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  grille[milieu][milieu]=grille[milieu+1][milieu+1]=vert;
+  grille[milieu+1][milieu]=grille[milieu][milieu+1]=rouge;
 
   do{
     printf("Combien voulez-vous de bombes ? (maximum %d)\n",(N*N)-16);
@@ -121,6 +127,7 @@ char getSymbole(cellule c)
     }else if(mode=='D'){
       return('o');
     }
+    case trou : return('X');
     case vert : return('V');
     case rouge : return('R');
     default : exit(ERREUR_getSymbole);
@@ -174,8 +181,8 @@ int checkcapture(cellule **plateau, int x, int y, direction dir, cellule c)
   {
     return(0);
   }else{
-    suivante=(plateau[i+dir.dirhori][j+dir.dirverti]);
-    if(suivante==vide || suivante==bombe || suivante==c){
+    suivante=(grille[i+dir.dirhori][j+dir.dirverti]);
+    if(suivante==vide || suivante==bombe || suivante==c || suivante==trou){
       return(0);
     }
   }
@@ -185,8 +192,8 @@ int checkcapture(cellule **plateau, int x, int y, direction dir, cellule c)
     {
       return(0);
     }else{
-      suivante=(plateau[i+dir.dirhori][j+dir.dirverti]);
-      if(suivante==vide || suivante==bombe){
+      suivante=(grille[i+dir.dirhori][j+dir.dirverti]);
+      if(suivante==vide || suivante==bombe || suivante==trou){
         return(0);
       }
     }
@@ -198,8 +205,7 @@ int checkcapture(cellule **plateau, int x, int y, direction dir, cellule c)
   }
 }
 
-//explosion d'une bombe, affecte vide � la case ainsi qu'� celles autour d'elle
-void explosion(cellule **plateau, fleche *rose, int x, int y)
+void init3x3(cellule **grille, fleche *rose, int x, int y)
 {
   direction dir;
   for(int i=0;i<8;i++){
@@ -208,7 +214,60 @@ void explosion(cellule **plateau, fleche *rose, int x, int y)
       plateau[x+dir.dirhori][y+dir.dirverti]=vide;
     }
   }
-  plateau[x][y]=vide;
+}
+
+//explosion d'une bombe à effet aléatoire
+void explosion(cellule **grille, cellule couleur, fleche *rose, int x, int y)
+{
+  direction dir;
+  cellule c;
+  srand(time(NULL));
+
+  switch(rand()%5){
+    case 0 :
+            //laser ultra puissant
+            dir=rose[rand()%8].dir;
+            int i=x,j=y;
+            while(checkbords(i,j,dir)){
+              i+=dir.dirhori;j+=dir.dirverti;
+              c=grille[i][j];
+              if(c!=vide && c!=bombe && c!=trou){
+                grille[i][j]=vide;
+              }
+            }
+            grille[x][y]=couleur;
+            break;
+    case 1 :
+            //change la couleur du pion qui vient d'être posé
+            //REGLE OPTIONNELLE : on capture après ça
+            //XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+            //XXXCOULEURS NON GENERIQUEXXX
+            //XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+            if(couleur==vert){
+              grille[x][y]=rouge;
+            }else{
+              grille[x][y]=vert;
+            }
+            break;
+    case 2 :
+            //seul reste le pion joué
+            init3x3(grille,rose,x,y);
+            grille[x][y]=couleur;
+            break;
+    case 3 :
+            //explosion normale + case inutilisable
+            init3x3(grille,rose,x,y);
+            grille[x][y]=trou;
+            break;
+    case 4 :
+            //explosion normale
+            init3x3(grille,rose,x,y);
+            grille[x][y]=vide;
+            break;
+    default :
+            printf("explosion() : valeur aléatoire incorrecte");
+            exit(0);
+  }
   printf("Il y avait une bombe!\n");
 }
 
@@ -245,8 +304,8 @@ int pose(cellule **plateau, fleche *rose, joueur j)
       s+=rose[i].nbcases;
     }
   }
-  if(plateau[x][y]==bombe){
-    explosion(plateau,rose,x,y);
+  if(grille[x][y]==bombe){
+    explosion(grille,j.couleur,rose,x,y);
   }else{
     capture(plateau,rose,x,y,j.couleur);
   }
@@ -262,8 +321,8 @@ int verifcouprestant(cellule **plateau, fleche *rose, joueur j)
 
   for(int i=0;i<N;i++){
     for(int j=0;j<N;j++){
-      c=plateau[i][j];
-      if((c!=couleur) && (c!=bombe) && (c!=vide)){
+      c=grille[i][j];
+      if((c!=couleur) && (c!=bombe) && (c!=vide) && (c!=trou)){
         printf("J'ai trouvé un enemie en %d,%d\n",i,j);
         for(int k=0;k<8;k++){
           dir=rose[k].dir;
@@ -272,13 +331,14 @@ int verifcouprestant(cellule **plateau, fleche *rose, joueur j)
             x=i+dir.dirhori;
             y=j+dir.dirverti;
             dirinverse=directioninverse(rose,dir);
-            if(((c==vide) || (c==bombe)) && (checkcapture(plateau,x,y,dirinverse,couleur)>0)){
-              printf("De %d,%d je peux l'avoir\n",x,y,dirinverse.dirhori,dirinverse.dirverti);
+            if(((c==vide) || (c==bombe)) && (checkcapture(grille,x,y,dirinverse,couleur)>0)){
+              printf("De %d,%d je peux l'avoir\n",x,y);
               return(1);
             }
-            printf("De %d,%d c'est niet\n",x,y,dirinverse.dirhori,dirinverse.dirverti);
+            printf("Pas depuis %d,%d  ",x,y);
           }
         }
+        printf("\n");
       }
     }
   }

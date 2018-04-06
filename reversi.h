@@ -2,7 +2,7 @@
 #ifndef __REVERSI__
 #define __REVERSI__
 
-  typedef enum{vide=0,bombe,vert,rouge}cellule;
+  typedef enum{vide=0,trou,bombe,vert,rouge}cellule;
   typedef struct{
     int dirhori;
     int dirverti;
@@ -26,11 +26,12 @@
   char getSymbole(cellule c);
   void affichage(cellule **plateau);
   int checkbords(int i, int j, direction dir);
-  int checkcapture(cellule **plateau, int x, int y, direction dir, cellule c);
-  void explosion(cellule **plateau, fleche *rose, int x, int y);
-  void capture(cellule **plateau, fleche *rose, int x, int y, cellule c);
-  int pose(cellule **plateau, fleche *rose, joueur j);
-  int verifcouprestant(cellule **plateau, fleche *rose, joueur j);
+  int checkcapture(cellule **grille, int x, int y, direction dir, cellule c);
+  void init3x3(cellule **grille, fleche *rose, int x, int y);
+  void explosion(cellule **grille, cellule c, fleche *rose, int x, int y);
+  void capture(cellule **grille, fleche *rose, int x, int y, cellule c);
+  int pose(cellule **grille, fleche *rose, joueur j);
+  int verifcouprestant(cellule **grille, fleche *rose, joueur j);
   direction directioninverse(fleche *rose, direction dir);
   int checkfin(cellule **plateau, fleche *rose, joueur *tabjoueurs, int cpt);
   void scores(cellule **plateau, joueur *tabjoueurs);
