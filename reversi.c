@@ -81,7 +81,7 @@ cellule **initGrille()
   do{
     printf("Combien voulez-vous de bombes ? (maximum %d)\n",(N*N)-16);
     scanf("%d",&nbbombes);
-  }while(nbbombes>=(N*N)-16);
+  }while(nbbombes>(N*N)-16);
   for(int i=1;i<=nbbombes;i++){
     do{
       randomX=rand()%N;

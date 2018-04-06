@@ -20,13 +20,8 @@
 
   joueur *initJoueurs();
   fleche *initrose();
-<<<<<<< HEAD
   cellule **initGrille(int M);
   int terminate(cellule **grille, fleche *rose);
-=======
-  cellule **initGrille();
-  int terminateGrille(cellule **grille, fleche *rose);
->>>>>>> f0a92c8627cc15561e06f1e9c49bdf1bf5307a8f
   char getSymbole(cellule c);
   void affichage(cellule **grille);
   int checkbords(int i, int j, direction dir);
