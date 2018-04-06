@@ -9,7 +9,7 @@
 #define mode 'D'
 #define signal 4
 //note : N pair et >= 6
-#define N 4
+#define N 6
 
 //renvoie le tableau de joueurs
 joueur *initJoueurs()
@@ -28,7 +28,7 @@ fleche *initrose()
 {
   fleche *rose;
 
-  //tableau de directions pr�d�finies
+  //tableau de directions predefinies
   const direction
   nord={0,-1},
   sud={0,1},
@@ -112,7 +112,7 @@ cellule **initplateau()
   system("clear");
 
   do{
-    printf("Combien voulez-vous de bombes ? (maximum %d)\n",(N*N)-16);
+    printf("Combien de bombes voulez-vous ? (maximum %d)\n",(N*N)-16);
     scanf("%d",&nbbombes);
   }while(nbbombes>(N*N)-16);
   for(int i=1;i<=nbbombes;i++){
@@ -175,7 +175,7 @@ void affichage(cellule **plateau, int tour)
   printf(" x\n\n");
 }
 
-//pour v�rifier si l'on va sur un bord
+//pour verifier si l'on va sur un bord
 //renvoie 0 si c'est le cas
 int checkbords(int i, int j, direction dir)
 {
@@ -193,7 +193,7 @@ int checkbords(int i, int j, direction dir)
   return(1);
 }
 
-//renvoie le nombre de pion captur�s avec une pose dans une direction donn�e
+//renvoie le nombre de pion captures avec une pose dans une direction donnee
 int checkcapture(cellule **plateau, int x, int y, direction dir, cellule c)
 {
   int i=x,j=y;
@@ -239,20 +239,22 @@ void init3x3(cellule **plateau, fleche *rose, int x, int y, int **age)
   }
 }
 
-//explosion d'une bombe à effet aléatoire
+//explosion d'une bombe a effet aleatoire
 void explosion(cellule **plateau, cellule couleur, fleche *rose, int x, int y, int **age)
 {
   direction dir;
   cellule c;
   srand(time(NULL));
 
+  printf("Bombe : ");
   switch(rand()%5){
     case 0 :
             //laser ultra puissant
             dir=rose[rand()%8].dir;
             int i=x,j=y;
             while(checkbords(i,j,dir)){
-              i+=dir.hori;j+=dir.verti;
+              i+=dir.hori;
+              j+=dir.verti;
               c=plateau[i][j];
               if(c!=vide && c!=bombe && c!=trou){
                 plateau[i][j]=vide;
@@ -261,10 +263,11 @@ void explosion(cellule **plateau, cellule couleur, fleche *rose, int x, int y, i
             }
             plateau[x][y]=couleur;
             age[x][y]=1;
+            printf("Laser!");
             break;
     case 1 :
-            //change la couleur du pion qui vient d'être posé
-            //REGLE OPTIONNELLE : on capture après ça
+            //change la couleur du pion qui vient d'etre pose
+            //REGLE OPTIONNELLE : on capture apres ça
             //XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
             //XXXCOULEURS NON GENERIQUESXXX
             //XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -274,30 +277,34 @@ void explosion(cellule **plateau, cellule couleur, fleche *rose, int x, int y, i
               plateau[x][y]=vert;
             }
             age[x][y]=1;
+            printf("Changement de couleur!");
             break;
     case 2 :
-            //seul reste le pion joué
+            //seul reste le pion joue
             init3x3(plateau,rose,x,y,age);
             plateau[x][y]=couleur;
             age[x][y]=1;
+            printf("Survivant!");
             break;
     case 3 :
             //explosion normale + case inutilisable
             init3x3(plateau,rose,x,y,age);
             plateau[x][y]=trou;
             age[x][y]=0;
+            printf("Mayhem!");
             break;
     case 4 :
             //explosion normale
             init3x3(plateau,rose,x,y,age);
             plateau[x][y]=vide;
             age[x][y]=0;
+            printf("Classique!");
             break;
     default :
-            printf("explosion() : valeur aléatoire incorrecte");
+            printf("explosion() : valeur aleatoire incorrecte");
             exit(0);
   }
-  printf("Il y avait une bombe!\n");
+  printf("\n");
 }
 
 //capture de pions enemies
@@ -314,8 +321,8 @@ void capture(cellule **plateau, fleche *rose, int x, int y, int **age, cellule c
   }
 }
 
-//incrémente l'age des pions, déclenche les trahisons puis en gère les répercussions
-//return 0 s'il n'y a pas eu de trahison
+//incremente l'age des pions, declenche les trahisons puis en gere les repercussions
+//renvoie 0 s'il n'y a pas eu de trahison
 int trahison(cellule **plateau, fleche *rose, int **age, int tour)
 {
   int somme=0,i,j,currentage;
@@ -350,7 +357,7 @@ int trahison(cellule **plateau, fleche *rose, int **age, int tour)
               rose[k].nbcases=checkcapture(plateau,i,j,rose[k].dir,couleur);
             }
             capture(plateau,rose,i,j,age,couleur);
-            printf("%d,%d a trahi!JUDAS!\n",i,j);
+            printf("%d,%d a trahi! JUDAS!\n",i,j);
             return(1);
           }
           somme-=currentage;
@@ -368,16 +375,17 @@ int pose(cellule **plateau, fleche *rose, joueur j, int **age, int tour)
   int x,y,s=0;
   cellule c=getSymbole(j.couleur);
 
-  printf("C'est à %c de jouer\n",c);
+  printf("C'est a %c de jouer\n",c);
 
   if(verifcouprestant(plateau,rose,j)==0){
     system("clear");
     printf("%c ne peux pas jouer\n",c);
+    trahison(plateau,rose,age,tour);
     return(0);
   }
 
   while(s==0){
-    printf("Entrez la case où vous souhaitez jouer %c (au format x,y)\n",getSymbole(j.couleur));
+    printf("Entrez la case ou vous souhaitez jouer %c (au format x,y)\n",getSymbole(j.couleur));
     scanf("%d,%d",&x,&y);
     for(int i=0;i<8;i++){
       rose[i].nbcases=checkcapture(plateau,x,y,rose[i].dir,j.couleur);
@@ -409,7 +417,7 @@ int verifcouprestant(cellule **plateau, fleche *rose, joueur j)
     for(int j=0;j<N;j++){
       c=plateau[i][j];
       if(c!=couleur && c!=bombe && c!=vide && c!=trou){
-        printf("J'ai trouvé un enemie en %d,%d\n",i,j);
+        printf("J'ai trouve un enemie en %d,%d\n",i,j);
         for(int k=0;k<8;k++){
           dir=rose[k].dir;
           if(checkbords(i,j,dir)){

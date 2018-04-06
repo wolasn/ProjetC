@@ -27,7 +27,7 @@ int main()
   }
   scores(plateau,tabjoueurs);
 
-  //ne rien changer après
+  //ne rien changer apres
   terminate(plateau,rose,age);
   return (0);
 }
