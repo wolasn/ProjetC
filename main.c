@@ -8,8 +8,6 @@
   joueur *tabjoueurs;
   int tab[5]={0};
 
-
-
 int main()
 {
   rose = initrose();

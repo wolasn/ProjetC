@@ -7,7 +7,7 @@
 #define ERREUR_getSymbole 2
 #define mode 'D'
 //note : N pair et >= 6
-#define N 8
+#define N 6
 
 //renvoie le tableau de joueurs
 joueur *initJoueurs()
@@ -210,9 +210,10 @@ void init3x3(cellule **grille, fleche *rose, int x, int y)
 }
 
 //explosion d'une bombe à effet aléatoire
-void explosion(cellule **grille, cellule c, fleche *rose, int x, int y)
+void explosion(cellule **grille, cellule couleur, fleche *rose, int x, int y)
 {
   direction dir;
+  cellule c;
   srand(time(NULL));
 
   switch(rand()%5){
@@ -220,17 +221,22 @@ void explosion(cellule **grille, cellule c, fleche *rose, int x, int y)
             //laser ultra puissant
             dir=rose[rand()%8].dir;
             int i=x,j=y;
-            while(!checkbords(i,j,dir)){
+            while(checkbords(i,j,dir)){
               i+=dir.dirhori;j+=dir.dirverti;
-              grille[i][j]=vide;
+              c=grille[i][j];
+              if(c!=vide && c!=bombe && c!=trou){
+                grille[i][j]=vide;
+              }
             }
+            grille[x][y]=couleur;
             break;
     case 1 :
             //change la couleur du pion qui vient d'être posé
+            //REGLE OPTIONNELLE : on capture après ça
             //XXXXXXXXXXXXXXXXXXXXXXXXXXXX
             //XXXCOULEURS NON GENERIQUEXXX
             //XXXXXXXXXXXXXXXXXXXXXXXXXXXX
-            if(c==vert){
+            if(couleur==vert){
               grille[x][y]=rouge;
             }else{
               grille[x][y]=vert;
@@ -239,12 +245,13 @@ void explosion(cellule **grille, cellule c, fleche *rose, int x, int y)
     case 2 :
             //seul reste le pion joué
             init3x3(grille,rose,x,y);
-            grille[x][y]=c;
+            grille[x][y]=couleur;
             break;
     case 3 :
             //explosion normale + case inutilisable
             init3x3(grille,rose,x,y);
             grille[x][y]=trou;
+            break;
     case 4 :
             //explosion normale
             init3x3(grille,rose,x,y);
@@ -321,9 +328,10 @@ int verifcouprestant(cellule **grille, fleche *rose, joueur j)
               printf("De %d,%d je peux l'avoir\n",x,y);
               return(1);
             }
-            printf("De %d,%d c'est niet\n",x,y);
+            printf("Pas depuis %d,%d  ",x,y);
           }
         }
+        printf("\n");
       }
     }
   }
