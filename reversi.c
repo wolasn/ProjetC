@@ -9,7 +9,7 @@
 #define mode 'D'
 #define signal 4
 //note : N pair et >= 6
-#define N 6
+//#define N 6
 
 //renvoie le tableau de joueurs
 joueur *initJoueurs()
@@ -52,17 +52,17 @@ fleche *initrose()
 }
 
 //initialise le tableau d'age des pions
-int **initage()
+int **initage(int *N)
 {
   int **age,i,j;
 
-  age=malloc(N*sizeof(int*));
+  age=malloc(*N*sizeof(int*));
   if(age==NULL){
     exit(ERREUR_ALLOCATION_MEMOIRE);
   }
 
-  for(i=0;i<N;i++){
-    age[i]=malloc(N*sizeof(int));
+  for(i=0;i<*N;i++){
+    age[i]=malloc(*N*sizeof(int));
     if(age[i]==NULL){
       for(j=i-1;j>=0;j--){
         free(age[j]);
@@ -70,7 +70,7 @@ int **initage()
       free(age);
       exit(ERREUR_ALLOCATION_MEMOIRE);
     }
-    for(j=0;j<N;j++){
+    for(j=0;j<*N;j++){
       age[i][j]=0;
     }
   }
@@ -78,19 +78,34 @@ int **initage()
 }
 
 //initialisation du age de jeu
-cellule **initplateau()
+cellule **initplateau(int *N)
 {
-  int randomX,randomY,nbbombes,i,j,milieu=(N/2)-1;
+  int randomX,randomY,nbbombes,i,j,milieu;
   cellule **plateau;
   srand(time(NULL));
 
-  plateau=malloc(N*sizeof(cellule*));
+  system("clear");
+
+  while(*N<1 || *N>3){
+    printf("Duree de la partie\n");
+    printf("1 : courte\n");
+    printf("2 : moyenne\n");
+    printf("3 : longue\n\n");
+    scanf("%d",N);
+  }
+  switch(*N){
+    case 1 : *N=6;break;
+    case 2 : *N=8;break;
+    case 3 : *N=10;break;
+  }
+
+  plateau=malloc(*N*sizeof(cellule*));
   if(plateau==NULL){
     exit(ERREUR_ALLOCATION_MEMOIRE);
   }
 
-  for(i=0;i<N;i++){
-    plateau[i]=malloc(N*sizeof(cellule));
+  for(i=0;i<*N;i++){
+    plateau[i]=malloc(*N*sizeof(cellule));
     if(plateau[i]==NULL){
       for(j=i-1;j>=0;j--){
         free(plateau[j]);
@@ -98,27 +113,26 @@ cellule **initplateau()
       free(plateau);
       exit(ERREUR_ALLOCATION_MEMOIRE);
     }
-    for(j=0;j<N;j++){
+    for(j=0;j<*N;j++){
       plateau[i][j]=vide;
     }
   }
 
+  milieu=(*N/2)-1;
   //XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   //XXXCOULEURS NON GENERIQUESXXX
   //XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   plateau[milieu][milieu]=plateau[milieu+1][milieu+1]=vert;
   plateau[milieu+1][milieu]=plateau[milieu][milieu+1]=rouge;
 
-  system("clear");
-
   do{
-    printf("Combien de bombes voulez-vous ? (maximum %d)\n",(N*N)-16);
+    printf("Combien de bombes voulez-vous ? (maximum %d)\n",(*N**N)-16);
     scanf("%d",&nbbombes);
-  }while(nbbombes>(N*N)-16);
+  }while(nbbombes>(*N**N)-16);
   for(int i=1;i<=nbbombes;i++){
     do{
-      randomX=rand()%N;
-      randomY=rand()%N;
+      randomX=rand()%*N;
+      randomY=rand()%*N;
     }while((((randomX >= milieu-1) && (randomX <= milieu+2)) && ((randomY >= milieu-1) && (randomY <= milieu+2))) || (plateau[randomX][randomY]==bombe));
     plateau[randomX][randomY]=bombe;
   }
@@ -126,9 +140,9 @@ cellule **initplateau()
 }
 
 //desallouage d'un plateau
-int terminate(cellule **plateau, fleche *rose, int **age)
+int terminate(cellule **plateau, fleche *rose, int **age, int *N)
 {
-  for(int i=N-1;i>=0;i--){
+  for(int i=*N-1;i>=0;i--){
     free(plateau[i]);
     free(age[i]);
   }
@@ -157,17 +171,17 @@ char getSymbole(cellule c)
 }
 
 //affichage d'une plateau sur la sortie standard
-void affichage(cellule **plateau, int tour)
+void affichage(cellule **plateau, int tour, int *N)
 {
   //system("clear");
   printf("\nTour : %d\n\n   ",tour);
-  for(int k=0;k<N;k++){
+  for(int k=0;k<*N;k++){
     printf(" %d ",k);
   }
   printf(" y\n");
-  for(int i=0;i<N;i++){
+  for(int i=0;i<*N;i++){
     printf(" %d ",i);
-    for(int j=0;j<N;j++){
+    for(int j=0;j<*N;j++){
       printf("[%c]",getSymbole(plateau[i][j]));
     }
     printf("\n");
@@ -177,29 +191,29 @@ void affichage(cellule **plateau, int tour)
 
 //pour verifier si l'on va sur un bord
 //renvoie 0 si c'est le cas
-int checkbords(int i, int j, direction dir)
+int checkbords(int i, int j, direction dir, int *N)
 {
   if
-  ((dir.hori==1 && dir.verti==1 && (i==N-1 || j==N-1))  //sudest
-  ||(dir.hori==1 && dir.verti==-1 && (i==N-1 || j==0))  //nordest
-  ||(dir.hori==-1 && dir.verti==1 && (i==0 || j==N-1))  //sudouest
-  ||(dir.hori==-1 && dir.verti==-1 && (i==0 || j==0))   //nordouest
-  ||(dir.hori==1 && dir.verti==0 && i==N-1)             //est
-  ||(dir.hori==-1 && dir.verti==0 && i==0)              //ouest
-  ||(dir.hori==0 && dir.verti==1 && j==N-1)             //sud
-  ||(dir.hori==0 && dir.verti==-1 && j==0)){            //nord
+  ((dir.hori==1 && dir.verti==1 && (i==*N-1 || j==*N-1)) //sudest
+  ||(dir.hori==1 && dir.verti==-1 && (i==*N-1 || j==0))  //nordest
+  ||(dir.hori==-1 && dir.verti==1 && (i==0 || j==*N-1))  //sudouest
+  ||(dir.hori==-1 && dir.verti==-1 && (i==0 || j==0))    //nordouest
+  ||(dir.hori==1 && dir.verti==0 && i==*N-1)             //est
+  ||(dir.hori==-1 && dir.verti==0 && i==0)               //ouest
+  ||(dir.hori==0 && dir.verti==1 && j==*N-1)             //sud
+  ||(dir.hori==0 && dir.verti==-1 && j==0)){             //nord
     return(0);
   }
   return(1);
 }
 
 //renvoie le nombre de pion captures avec une pose dans une direction donnee
-int checkcapture(cellule **plateau, int x, int y, direction dir, cellule c)
+int checkcapture(cellule **plateau, int x, int y, direction dir, cellule c, int *N)
 {
   int i=x,j=y;
   cellule suivante;
 
-  if(!checkbords(i,j,dir))
+  if(!checkbords(i,j,dir,N))
   {
     return(0);
   }else{
@@ -210,7 +224,7 @@ int checkcapture(cellule **plateau, int x, int y, direction dir, cellule c)
   }
   while(suivante!=c){
     i+=dir.hori;j+=dir.verti;
-    if(!checkbords(i,j,dir))
+    if(!checkbords(i,j,dir,N))
     {
       return(0);
     }else{
@@ -227,12 +241,12 @@ int checkcapture(cellule **plateau, int x, int y, direction dir, cellule c)
   }
 }
 
-void init3x3(cellule **plateau, fleche *rose, int x, int y, int **age)
+void init3x3(cellule **plateau, fleche *rose, int x, int y, int **age, int *N)
 {
   direction dir;
   for(int i=0;i<8;i++){
     dir=rose[i].dir;
-    if(checkbords(x,y,dir)){
+    if(checkbords(x,y,dir,N)){
       plateau[x+dir.hori][y+dir.verti]=vide;
       age[x+dir.hori][y+dir.verti]=0;
     }
@@ -240,7 +254,7 @@ void init3x3(cellule **plateau, fleche *rose, int x, int y, int **age)
 }
 
 //explosion d'une bombe a effet aleatoire
-void explosion(cellule **plateau, cellule couleur, fleche *rose, int x, int y, int **age)
+void explosion(cellule **plateau, cellule couleur, fleche *rose, int x, int y, int **age, int *N)
 {
   direction dir;
   cellule c;
@@ -252,7 +266,7 @@ void explosion(cellule **plateau, cellule couleur, fleche *rose, int x, int y, i
             //laser ultra puissant
             dir=rose[rand()%8].dir;
             int i=x,j=y;
-            while(checkbords(i,j,dir)){
+            while(checkbords(i,j,dir,N)){
               i+=dir.hori;
               j+=dir.verti;
               c=plateau[i][j];
@@ -281,21 +295,21 @@ void explosion(cellule **plateau, cellule couleur, fleche *rose, int x, int y, i
             break;
     case 2 :
             //seul reste le pion joue
-            init3x3(plateau,rose,x,y,age);
+            init3x3(plateau,rose,x,y,age,N);
             plateau[x][y]=couleur;
             age[x][y]=1;
             printf("Survivant!");
             break;
     case 3 :
             //explosion normale + case inutilisable
-            init3x3(plateau,rose,x,y,age);
+            init3x3(plateau,rose,x,y,age,N);
             plateau[x][y]=trou;
             age[x][y]=0;
             printf("Mayhem!");
             break;
     case 4 :
             //explosion normale
-            init3x3(plateau,rose,x,y,age);
+            init3x3(plateau,rose,x,y,age,N);
             plateau[x][y]=vide;
             age[x][y]=0;
             printf("Classique!");
@@ -323,13 +337,13 @@ void capture(cellule **plateau, fleche *rose, int x, int y, int **age, cellule c
 
 //incremente l'age des pions, declenche les trahisons puis en gere les repercussions
 //renvoie 0 s'il n'y a pas eu de trahison
-int trahison(cellule **plateau, fleche *rose, int **age, int tour)
+int trahison(cellule **plateau, fleche *rose, int **age, int tour, int *N)
 {
   int somme=0,i,j,currentage;
   cellule couleur;
 
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
+  for(i=0;i<*N;i++){
+    for(j=0;j<*N;j++){
       if(age[i][j]>0){
         age[i][j]++;
         somme+=age[i][j];
@@ -338,8 +352,8 @@ int trahison(cellule **plateau, fleche *rose, int **age, int tour)
   }
   if(tour>=signal){
     srand(time(NULL));
-    for(i=0;i<N;i++){
-      for(j=0;j<N;j++){
+    for(i=0;i<*N;i++){
+      for(j=0;j<*N;j++){
         currentage=age[i][j];
         if(currentage>0){
           if((((float)rand()/INT_MAX)*somme) <= (float)currentage){
@@ -354,7 +368,7 @@ int trahison(cellule **plateau, fleche *rose, int **age, int tour)
             }
             age[i][j]=1;
             for(int k=0;k<8;k++){
-              rose[k].nbcases=checkcapture(plateau,i,j,rose[k].dir,couleur);
+              rose[k].nbcases=checkcapture(plateau,i,j,rose[k].dir,couleur,N);
             }
             capture(plateau,rose,i,j,age,couleur);
             printf("%d,%d a trahi! JUDAS!\n",i,j);
@@ -370,17 +384,17 @@ int trahison(cellule **plateau, fleche *rose, int **age, int tour)
 
 //pose d'un pion
 //renvoie 0 si le joueur n'a pas pu jouer
-int pose(cellule **plateau, fleche *rose, joueur j, int **age, int tour)
+int pose(cellule **plateau, fleche *rose, joueur j, int **age, int tour, int *N)
 {
   int x,y,s=0;
   cellule c=getSymbole(j.couleur);
 
   printf("C'est a %c de jouer\n",c);
 
-  if(verifcouprestant(plateau,rose,j)==0){
+  if(verifcouprestant(plateau,rose,j,N)==0){
     system("clear");
     printf("%c ne peux pas jouer\n",c);
-    trahison(plateau,rose,age,tour);
+    trahison(plateau,rose,age,tour,N);
     return(0);
   }
 
@@ -388,7 +402,7 @@ int pose(cellule **plateau, fleche *rose, joueur j, int **age, int tour)
     printf("Entrez la case ou vous souhaitez jouer %c (au format x,y)\n",getSymbole(j.couleur));
     scanf("%d,%d",&x,&y);
     for(int i=0;i<8;i++){
-      rose[i].nbcases=checkcapture(plateau,x,y,rose[i].dir,j.couleur);
+      rose[i].nbcases=checkcapture(plateau,x,y,rose[i].dir,j.couleur,N);
       s+=rose[i].nbcases;
     }
   }
@@ -396,36 +410,36 @@ int pose(cellule **plateau, fleche *rose, joueur j, int **age, int tour)
   system("clear");
 
   if(plateau[x][y]==bombe){
-    explosion(plateau,j.couleur,rose,x,y,age);
+    explosion(plateau,j.couleur,rose,x,y,age,N);
   }else{
     capture(plateau,rose,x,y,age,j.couleur);
   }
 
-  trahison(plateau,rose,age,tour);
+  trahison(plateau,rose,age,tour,N);
 
   return(1);
 }
 
 //renvoie 1 si le joueur a au moins un coup jouable
-int verifcouprestant(cellule **plateau, fleche *rose, joueur j)
+int verifcouprestant(cellule **plateau, fleche *rose, joueur j, int *N)
 {
   direction dir,dirinverse;
   cellule couleur=j.couleur,c;
   int x,y;
 
-  for(int i=0;i<N;i++){
-    for(int j=0;j<N;j++){
+  for(int i=0;i<*N;i++){
+    for(int j=0;j<*N;j++){
       c=plateau[i][j];
       if(c!=couleur && c!=bombe && c!=vide && c!=trou){
         printf("J'ai trouve un enemie en %d,%d\n",i,j);
         for(int k=0;k<8;k++){
           dir=rose[k].dir;
-          if(checkbords(i,j,dir)){
+          if(checkbords(i,j,dir,N)){
             c=plateau[i+dir.hori][j+dir.verti];
             x=i+dir.hori;
             y=j+dir.verti;
             dirinverse=directioninverse(rose,dir);
-            if((c==vide || c==bombe) && (checkcapture(plateau,x,y,dirinverse,couleur)>0)){
+            if((c==vide || c==bombe) && (checkcapture(plateau,x,y,dirinverse,couleur,N)>0)){
               printf("De %d,%d je peux l'avoir\n",x,y);
               return(1);
             }
@@ -452,12 +466,12 @@ direction directioninverse(fleche *rose, direction dir)
 
 //renvoie le prochain l'indice du prochain joueur pouvant joueur
 //renvoie -1 s'il n'y en a aucun
-int checkfin(cellule **plateau, fleche *rose, joueur *tabjoueurs, int cpt)
+int checkfin(cellule **plateau, fleche *rose, joueur *tabjoueurs, int cpt, int *N)
 {
   int nbjoueurs=2;
 
   for(int k=cpt;k<nbjoueurs;k++,(cpt++)%2){
-    if(verifcouprestant(plateau,rose,tabjoueurs[k])!=0){
+    if(verifcouprestant(plateau,rose,tabjoueurs[k],N)!=0){
       return(k);
     };
   }
@@ -465,7 +479,7 @@ int checkfin(cellule **plateau, fleche *rose, joueur *tabjoueurs, int cpt)
 }
 
 //affiche le score
-void scores(cellule **plateau, joueur *tabjoueurs)
+void scores(cellule **plateau, joueur *tabjoueurs, int *N)
 {
   int nbjoueurs=2,score;
   cellule couleur;
@@ -473,8 +487,8 @@ void scores(cellule **plateau, joueur *tabjoueurs)
   for(int k=0;k<nbjoueurs;k++){
     couleur=tabjoueurs[k].couleur;
     score=0;
-    for(int i=0;i<N;i++){
-      for(int j=0;j<N;j++){
+    for(int i=0;i<*N;i++){
+      for(int j=0;j<*N;j++){
         if(couleur==plateau[i][j])
           score++;
       }
