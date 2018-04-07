@@ -23,8 +23,6 @@
   void affichage(cellule **plateau, int tour, int *N);
   int checkbords(int i, int j, direction dir, int *N);
   int checkcapture(cellule **plateau, int x, int y, direction dir, cellule c, int *N);
-  void init3x3(cellule **plateau, fleche *rose, int x, int y, int **age, int *N);
-  void explosion(cellule **plateau, cellule c, fleche *rose, int x, int y, int **age, int *N);
   void capture(cellule **plateau, fleche *rose, int x, int y, int **age, cellule c);
   int trahison(cellule **plateau, fleche *rose, int **age, int tour, int *N);
   int pose(cellule **plateau, fleche *rose, joueur j, int **age, int tour, int *N);
