@@ -18,7 +18,6 @@
     int nbcoups;
   }joueur;
 
-  int terminate(cellule **plateau, fleche *rose, int **age, int *N);
   char getSymbole(cellule c);
   void affichage(cellule **plateau, int tour, int *N);
   int checkbords(int i, int j, direction dir, int *N);

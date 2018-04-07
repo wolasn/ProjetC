@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "reversi.h"
 #include "initreversi.h"
+#include "cartes.h"
 
 #define ERREUR_ALLOCATION_MEMOIRE 1
 
@@ -74,7 +75,7 @@ int **initage(int *N)
 }
 
 //initialisation du age de jeu
-cellule **initplateau(int *N)
+cellule **initplateau(int *N, carte *Vcartes, carte *Rcartes)
 {
   int randomX,randomY,nbbombes,i,j,milieu;
   cellule **plateau;
@@ -90,9 +91,9 @@ cellule **initplateau(int *N)
     scanf("%d",N);
   }
   switch(*N){
-    case 1 : *N=6;break;
-    case 2 : *N=8;break;
-    case 3 : *N=10;break;
+    case 1 : Vcartes=pioche(3);Rcartes=pioche(3);*N=6;break;
+    case 2 : Vcartes=pioche(6);Rcartes=pioche(6);*N=8;break;
+    case 3 : Vcartes=pioche(12);Rcartes=pioche(12);*N=10;break;
   }
 
   plateau=malloc(*N*sizeof(cellule*));
@@ -136,14 +137,15 @@ cellule **initplateau(int *N)
 }
 
 //desallouage d'un plateau
-int terminate(cellule **plateau, fleche *rose, int **age, int *N)
+int terminate(cellule **plateau, fleche *rose, int **age, int *N, carte *Rcartes, carte*Vcartes)
 {
   for(int i=*N-1;i>=0;i--){
     free(plateau[i]);
-    free(age[i]);
   }
   free(plateau);
   free(age);
+  free(Vcartes);
+  free(Rcartes);
   free(rose);
   return(0);
 }

@@ -6,13 +6,14 @@
   cellule **plateau=NULL;
   int **age=NULL;
   fleche *rose=NULL;
+  carte *Vcartes,*Rcartes;
   int cpt=0,res,tour=0,N=0;
   joueur *tabjoueurs;
 
 int main()
 {
   rose = initrose();
-  plateau=initplateau(&N);
+  plateau=initplateau(&N,Vcartes,Rcartes);
   age=initage(&N);
   tabjoueurs=initJoueurs();
   //ne rien changer avant
@@ -29,6 +30,6 @@ int main()
   scores(plateau,tabjoueurs,&N);
 
   //ne rien changer apres
-  terminate(plateau,rose,age,&N);
+  terminate(plateau,rose,age,&N,Rcartes,Vcartes);
   return (0);
 }
