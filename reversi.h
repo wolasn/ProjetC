@@ -18,10 +18,6 @@
     int nbcoups;
   }joueur;
 
-  joueur *initJoueurs();
-  fleche *initrose();
-  int **initage(int *N);
-  cellule **initplateau(int *N);
   int terminate(cellule **plateau, fleche *rose, int **age, int *N);
   char getSymbole(cellule c);
   void affichage(cellule **plateau, int tour, int *N);

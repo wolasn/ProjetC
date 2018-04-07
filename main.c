@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "reversi.h"
+#include "initreversi.h"
 
   cellule **plateau=NULL;
   int **age=NULL;
