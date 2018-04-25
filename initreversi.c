@@ -75,7 +75,7 @@ int **initage(int *N)
 }
 
 //initialisation du age de jeu
-cellule **initplateau(int *N, carte *Vcartes, carte *Rcartes)
+cellule **initplateau(int *N)
 {
   int randomX,randomY,nbbombes,i,j,milieu;
   cellule **plateau;
@@ -91,9 +91,9 @@ cellule **initplateau(int *N, carte *Vcartes, carte *Rcartes)
     scanf("%d",N);
   }
   switch(*N){
-    case 1 : Vcartes=pioche(3);Rcartes=pioche(3);*N=6;break;
-    case 2 : Vcartes=pioche(6);Rcartes=pioche(6);*N=8;break;
-    case 3 : Vcartes=pioche(12);Rcartes=pioche(12);*N=10;break;
+    case 1 : *N=6;break;
+    case 2 : *N=8;break;
+    case 3 : *N=10;break;
   }
 
   plateau=malloc(*N*sizeof(cellule*));
@@ -137,15 +137,13 @@ cellule **initplateau(int *N, carte *Vcartes, carte *Rcartes)
 }
 
 //desallouage d'un plateau
-int terminate(cellule **plateau, fleche *rose, int **age, int *N, carte *Rcartes, carte*Vcartes)
+int terminate(cellule **plateau, fleche *rose, int **age, int *N)
 {
   for(int i=*N-1;i>=0;i--){
     free(plateau[i]);
   }
   free(plateau);
   free(age);
-  free(Vcartes);
-  free(Rcartes);
   free(rose);
   return(0);
 }
