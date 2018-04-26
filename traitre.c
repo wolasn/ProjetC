@@ -27,8 +27,8 @@ int trahison(cellule **plateau, fleche *rose, int **age, int tour, int *N)
     for(i=0;i<*N;i++){
       for(j=0;j<*N;j++){
         currentage=age[i][j];
-        if(currentage>0){
-          if((((float)rand()/INT_MAX)*somme) <= (float)currentage){
+        if(currentage>2){
+          if(((rand()%somme) <= currentage){
             couleur=plateau[i][j];
             //XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
             //XXXCOULEURS NON GENERIQUESXXX
@@ -46,7 +46,6 @@ int trahison(cellule **plateau, fleche *rose, int **age, int tour, int *N)
             printf("%d,%d a trahi! Le fourbe!\n",i,j);
             return(1);
           }
-          somme-=currentage;
         }
       }
     }
